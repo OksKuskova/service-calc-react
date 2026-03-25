@@ -1,0 +1,22 @@
+:root {
+	--color-white: #FFFFFF;
+	--color-black: #000000;
+	--color-green-dark: #159920;
+	--color-green-light: #1dca2c;
+	--color-red: #e00808;
+	--color-gray-dark: #292929;
+	--color-gray-light: #646464;
+
+	--border: 1px solid var(--color-white);
+
+	--input-height: 40px;
+	--input-padding-inline: 10px;
+
+	--gap: 25px;
+
+	--transition-duration: 0.2s;
+
+	--select-arrow-size: 30px;
+}
+
+

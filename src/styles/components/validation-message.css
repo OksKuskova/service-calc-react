@@ -1,0 +1,7 @@
+.message--error {
+	color: var(--color-red);
+}
+
+.message--hint {
+	color: var(--color-gray-light);
+}

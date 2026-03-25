@@ -1,0 +1,9 @@
+.summary {
+	display: flex;
+	flex-direction: column;
+	row-gap: 15px;
+}
+
+.summary__value {
+	font-size: medium;
+}

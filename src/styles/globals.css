@@ -1,0 +1,20 @@
+body {
+	padding: 30px;
+	background-color: var(--color-black);
+	font-family: 'Inter', system-ui, sans-serif;
+	font-size: small;
+	line-height: 1.5;
+	color: var(--color-white);
+}
+
+#root {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+
+input,
+select,
+button {
+	transition-duration: var(--transition-duration);
+}
