@@ -1,23 +1,29 @@
-import type { JSX } from "react";
+import { useCallback, useState, type JSX } from "react";
+
+import FormField from "../form/form-field";
+import FormButton from "../form/form-button";
+import DiscountTimer from "./discount-timer";
+import Summary from "./summary";
+
+import { START_DISCOUNT_VALUE } from "./totals.const";
 
 function Totals(): JSX.Element {
+	const [discountPercent, setDiscountPercent] = useState<number>(START_DISCOUNT_VALUE);
+
+	const handleDiscountChange = useCallback((newDiscount: number) => {
+		setDiscountPercent(newDiscount);
+	}, []);
+
 	return (
 		<div className="calc__totals">
-			<div className="calc__discount summary">
-				<span className="summary__label">Скидка (осталось секунд: <span data-js-timer></span>)</span>
-				<span className="summary__value"><span data-js-discount></span>%</span>
-			</div>
+			<DiscountTimer discountPercent={discountPercent} onDiscountChange={handleDiscountChange} />
 
-			<div className="calc__summary summary">
-				<span className="summary__label">Итоговая стоимость</span>
-				<span className="summary__value"><span data-js-summary></span> P</span>
-			</div>
+			<Summary />
 
-			<div className="calc__field">
-				<button className="calc__button form-element form-element--green" type='submit' form="order"
-					data-js-form-submit>Оформить заказ
-				</button>
-			</div>
+			<FormField>
+				<FormButton />
+			</FormField>
+
 		</div>
 	)
 }
