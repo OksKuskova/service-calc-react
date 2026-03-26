@@ -1,22 +1,28 @@
 import type { JSX } from "react";
 
+import FormField from "./form-field";
+import FormSelect from "./form-select";
+import FormInput from "./form-input";
+
+import { FORM_ID } from "./form.const";
+import { getMaterials } from "../../mock";
+
 function Form(): JSX.Element {
+	const data = getMaterials();
+
 	return (
-		<form className="calc__form" id="order" data-js-form noValidate>
-			<div className="calc__field">
-				<label className="calc__label" htmlFor="material">Материал</label>
-				<div className="calc__select-wrapper" data-js-select-wrapper>
-					<select className="calc__select form-element" name="material" id="material" required data-js-select></select>
-				</div>
-			</div>
-			<div className="calc__field">
-				<label className="calc__label" htmlFor="quantity">Количество</label>
-				<input className="calc__input form-element" type="text" id="quantity" name="quantity" autoComplete="off" required />
-			</div>
-			<div className="calc__field">
-				<label className="calc__label" htmlFor="name">Ваше имя</label>
-				<input className="calc__input form-element" type="text" id="name" name="name" autoComplete="off" required />
-			</div>
+		<form className="calc__form" id={FORM_ID} noValidate>
+			<FormField label="Материал" elementId="material">
+				<FormSelect materials={data} />
+			</FormField>
+
+			<FormField label="Количество" elementId="quantity">
+				<FormInput type="text" id="quantity" autoComplete="off" required />
+			</FormField>
+
+			<FormField label="Ваше имя" elementId="username">
+				<FormInput type="text" id="username" autoComplete="off" required />
+			</FormField>
 		</form>
 	)
 }
