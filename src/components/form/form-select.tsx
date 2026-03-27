@@ -6,16 +6,18 @@ type FormSelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 }
 
 function FormSelect(props: FormSelectProps): JSX.Element {
-	const { materials } = props;
+	const { materials, ...rest } = props;
+
+	const hasOptions = materials.length > 0;
+
 	return (
 		<div className="calc__select-wrapper">
 			<select
 				className="calc__select form-element"
-				{...props}
+				{...rest}
 			>
-				{materials.length > 0
-					? materials.map(({ name }) => <option value={name} key={name}>{name}</option>)
-					: <option disabled selected>Нет доступных материалов</option>}
+				<option value="" disabled >{hasOptions ? 'Выберите материал' : 'Нет доступных материалов'}</option>
+				{hasOptions && materials.map(({ name }) => <option value={name} key={name}>{name}</option>)}
 			</select>
 		</div>
 	)
