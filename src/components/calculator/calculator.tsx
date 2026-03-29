@@ -7,7 +7,7 @@ import { CalcProvider } from "../../context";
 
 function Calculator(): JSX.Element {
 	return (
-		<div className="calc" data-js-calc>
+		<div className="calc">
 			<CalcProvider>
 				<Form />
 				<Totals />

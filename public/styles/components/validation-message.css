@@ -1,7 +1,7 @@
-.message--error {
+.calc__message--error {
 	color: var(--color-red);
 }
 
-.message--hint {
+.calc__message--hint {
 	color: var(--color-gray-light);
 }
