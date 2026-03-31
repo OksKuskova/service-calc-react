@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { FormErrorsValues, Material, MaterialsValues, Order } from "./types";
 import { VALIDATION } from "./const";
 import { calcApi } from "./api/api";
@@ -24,6 +24,7 @@ type CalcContextType = {
 	updateQuantityError: (originValue: string, cleanedValue: string) => void,
 	validateFormOnSubmit: () => boolean;
 	getOrderData: () => Order | null;
+	costWithoutDiscount: number | null;
 }
 
 const CalcContext = createContext<CalcContextType | null>(null);
@@ -51,6 +52,8 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 
 		loadMaterials();
 	}, [])
+
+	// Валидация
 
 	const clearError = useCallback((field: keyof FormErrorsType, errorType?: FormErrorsValues) => {
 		if (!errorType) {
@@ -101,8 +104,10 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 		return Object.keys(newErrors).length === 0;
 	}, [formData]);
 
-	const getOrderData = (): Order | null => {
-		const quantity = formData.quantity.trim();
+	// Получаем данные формы для отправки на сервер
+
+	const getOrderData = useCallback((): Order | null => {
+		const quantity = formData.quantity;
 
 		if (!formData.material || !quantity || !formData.username.trim()) {
 			return null;
@@ -119,11 +124,32 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 			quantity: numberQuantity,
 			username: formData.username.trim(),
 		}
-	}
+	}, [formData]);
 
+	// Расчет итоговой цены без скидки
+
+	const isFormValid = useMemo(() => {
+		const allFieldsFilled = !!formData.material && !!formData.quantity && Number(formData.quantity) !== 0;
+
+		const noErrors = Object.keys(formErrors).length === 0;
+
+		return allFieldsFilled && noErrors;
+	}, [formData.material, formData.quantity, formErrors]);
+
+	const selectedMaterial = useMemo(() => {
+		if (!formData.material) return null;
+
+		return materials.find((m) => m.name === formData.material);
+	}, [materials, formData.material])
+
+	const costWithoutDiscount = useMemo(() => {
+		if (!isFormValid || !selectedMaterial) return null;
+
+		return selectedMaterial.price * Number(formData.quantity);
+	}, [isFormValid, selectedMaterial, formData.quantity]);
 
 	return (
-		<CalcContext.Provider value={{ formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, materials, getOrderData }}>
+		<CalcContext.Provider value={{ formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, materials, getOrderData, costWithoutDiscount }}>
 			{children}
 		</CalcContext.Provider>
 	);

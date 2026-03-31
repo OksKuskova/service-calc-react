@@ -18,7 +18,7 @@ function Totals(): JSX.Element {
 		<div className="calc__totals">
 			<DiscountTimer discountPercent={discountPercent} onDiscountChange={handleDiscountChange} />
 
-			<Summary />
+			<Summary discountPercent={discountPercent} />
 
 			<FormField>
 				<FormButton />

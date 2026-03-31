@@ -1,21 +1,28 @@
 {
-	"materials": [
-		{
-			"name": "Дерево",
-			"price": 5000,
-			"id": "HaXFcI1WfcM"
-		},
-		{
-			"name": "Пластик",
-			"price": 123,
-			"id": "VCihoqI-Uts"
-		},
-		{
-			"name": "Металл",
-			"price": 1000,
-			"id": "Wbz6J3FDyiY"
-		}
-	],
-	"orders": [],
-	"$schema": "./node_modules/json-server/schema.json"
+  "materials": [
+    {
+      "name": "Дерево",
+      "price": 5000,
+      "id": "HaXFcI1WfcM"
+    },
+    {
+      "name": "Пластик",
+      "price": 123,
+      "id": "VCihoqI-Uts"
+    },
+    {
+      "name": "Металл",
+      "price": 1000,
+      "id": "Wbz6J3FDyiY"
+    }
+  ],
+  "orders": [
+    {
+      "material": "Пластик",
+      "quantity": 5,
+      "username": "Jrcfyf",
+      "id": "OD8oDGbWnZI"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
