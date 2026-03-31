@@ -5,22 +5,35 @@ import FormSelect from "./form-select";
 import FormInput from "./form-input";
 
 import { FORM_ID } from "./form.const";
-import { getMaterials } from "../../mock";
 import { useCalcContext, type FormErrorsType } from "../../context";
 import { cleanNotNumericValue } from "./form.utils";
 import { VALIDATION } from "../../const";
+import { calcApi } from "../../api/api";
 
 function Form(): JSX.Element {
-	const { formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit } = useCalcContext();
-
-	const data = getMaterials();
-	console.log('formData:', formData);
-	console.log('formErrors:', formErrors);
+	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData } = useCalcContext();
 
 	const handleFormSubmit = (evt: SubmitEvent<HTMLFormElement>) => {
 		evt.preventDefault();
+
 		const isValid = validateFormOnSubmit();
-		console.log('isValid:', isValid);
+
+		if (!isValid) {
+			return;
+		}
+
+		const order = getOrderData();
+
+		if (!order) {
+			console.error('Не удалось сформировать данные заказа');
+			return;
+		}
+
+		try {
+			calcApi.postOrder(order);
+		} catch (error: unknown) {
+			console.error('Ошибка при оформлении заказа:', error);
+		}
 	}
 
 	const handleInputChange = useCallback((evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -47,7 +60,7 @@ function Form(): JSX.Element {
 	return (
 		<form className="calc__form" id={FORM_ID} noValidate onSubmit={handleFormSubmit}>
 			<FormField label="Материал" elementId="material" error={formErrors.material}>
-				<FormSelect name="material" value={formData.material} materials={data} onChange={handleInputChange} />
+				<FormSelect name="material" value={formData.material} materials={materials} onChange={handleInputChange} />
 			</FormField>
 
 			<FormField label="Количество" elementId="quantity" error={formErrors.quantity}>

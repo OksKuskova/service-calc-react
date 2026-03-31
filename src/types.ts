@@ -1,7 +1,7 @@
 import { FormFields, Materials, VALIDATION } from "./const"
 
 type MaterialsKeys = keyof typeof Materials;
-type MaterialsValues = typeof Materials[MaterialsKeys];
+export type MaterialsValues = typeof Materials[MaterialsKeys];
 
 export type Material = {
 	name: MaterialsValues,
@@ -13,3 +13,8 @@ export type FormFieldsLabels = typeof FormFields[FormFieldsId];
 
 export type FormErrorsValues = typeof VALIDATION[keyof typeof VALIDATION];
 
+export type Order = {
+	material: MaterialsValues,
+	quantity: number,
+	username: string,
+}
