@@ -11,7 +11,7 @@ import { VALIDATION } from "../../const";
 import { calcApi } from "../../api/api";
 
 function Form(): JSX.Element {
-	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData, showSuccess, setError } = useCalcContext();
+	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData, showSuccess, setError, setSubmitting } = useCalcContext();
 
 	const handleFormSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
 		evt.preventDefault();
@@ -30,12 +30,18 @@ function Form(): JSX.Element {
 		}
 
 		try {
+			setSubmitting(true);
+
 			await calcApi.postOrder(order);
+
 			showSuccess();
 		}
 		catch (error: unknown) {
 			console.error('Ошибка при оформлении заказа:', error);
 			setError('order', VALIDATION.SERVER_ERROR);
+		}
+		finally {
+			setSubmitting(false);
 		}
 	}
 

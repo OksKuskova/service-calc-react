@@ -21,15 +21,18 @@ type CalcContextType = {
 	formData: FormDataType,
 	setFormData: React.Dispatch<React.SetStateAction<FormDataType>>,
 	formErrors: FormErrorsType,
+	costWithoutDiscount: number | null,
+	overlay: Overlay,
+	isSubmitting: boolean,
+
 	clearError: (error: keyof FormErrorsType, errorType?: FormErrorsValues) => void,
 	updateQuantityError: (originValue: string, cleanedValue: string) => void,
-	validateFormOnSubmit: () => boolean;
-	getOrderData: () => Order | null;
-	costWithoutDiscount: number | null;
-	overlay: Overlay;
-	hideOverlay: () => void;
-	showSuccess: () => void;
+	validateFormOnSubmit: () => boolean,
+	getOrderData: () => Order | null,
+	hideOverlay: () => void,
+	showSuccess: () => void,
 	setError: (error: keyof FormErrorsType, errorType: FormErrorsValues) => void,
+	setSubmitting: (value: boolean) => void,
 }
 
 const CalcContext = createContext<CalcContextType | null>(null);
@@ -49,6 +52,8 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 		isVisible: true,
 		type: null,
 	});
+
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
 	useEffect(() => {
 		const loadMaterials = async () => {
@@ -137,7 +142,7 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 		return Object.keys(newErrors).length === 0;
 	}, [formData]);
 
-	// Получаем данные формы для отправки на сервер
+	// Отправка данных формы на сервер
 
 	const getOrderData = useCallback((): Order | null => {
 		const quantity = formData.quantity;
@@ -158,6 +163,8 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 			username: formData.username.trim(),
 		}
 	}, [formData]);
+
+	const setSubmitting = useCallback((value: boolean) => setIsSubmitting(value), []);
 
 	// Расчет итоговой цены без скидки
 
@@ -198,6 +205,8 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 					hideOverlay,
 					showSuccess,
 					setError,
+					isSubmitting,
+					setSubmitting,
 				}
 			}
 		>
