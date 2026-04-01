@@ -5,13 +5,13 @@ import FormSelect from "./form-select";
 import FormInput from "./form-input";
 
 import { FORM_ID } from "./form.const";
-import { useCalcContext, type FormErrorsType } from "../../context";
+import { useCalcContext, type FormDataType, type FormErrorsType } from "../../context";
 import { cleanNotNumericValue } from "./form.utils";
 import { VALIDATION } from "../../const";
 import { calcApi } from "../../api/api";
 
 function Form(): JSX.Element {
-	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData, showSuccess, setError, setSubmitting } = useCalcContext();
+	const { materials, formData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData, showSuccess, setError, setSubmitting, clearForm, setFormField } = useCalcContext();
 
 	const handleFormSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
 		evt.preventDefault();
@@ -35,6 +35,7 @@ function Form(): JSX.Element {
 			await calcApi.postOrder(order);
 
 			showSuccess();
+			clearForm();
 		}
 		catch (error: unknown) {
 			console.error('Ошибка при оформлении заказа:', error);
@@ -48,6 +49,7 @@ function Form(): JSX.Element {
 	const handleInputChange = useCallback((evt: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = evt.target;
 
+		const formField = name as keyof FormDataType;
 		const errorField = name as keyof FormErrorsType;
 
 		clearError(errorField);
@@ -56,9 +58,9 @@ function Form(): JSX.Element {
 			const cleanedValue = cleanNotNumericValue(value);
 			updateQuantityError(value, cleanedValue);
 
-			setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
+			setFormField(formField, cleanedValue);
 		} else {
-			setFormData((prev) => ({ ...prev, [name]: value }));
+			setFormField(formField, value);
 		}
 	}, [clearError, cleanNotNumericValue, updateQuantityError]);
 

@@ -3,7 +3,7 @@ import type { FormErrorsValues, Material, MaterialsValues, Order, Overlay } from
 import { VALIDATION } from "./const";
 import { calcApi } from "./api/api";
 
-type FormDataType = {
+export type FormDataType = {
 	material: string,
 	quantity: string,
 	username: string,
@@ -19,7 +19,6 @@ export type FormErrorsType = {
 type CalcContextType = {
 	materials: Material[],
 	formData: FormDataType,
-	setFormData: React.Dispatch<React.SetStateAction<FormDataType>>,
 	formErrors: FormErrorsType,
 	costWithoutDiscount: number | null,
 	overlay: Overlay,
@@ -33,18 +32,22 @@ type CalcContextType = {
 	showSuccess: () => void,
 	setError: (error: keyof FormErrorsType, errorType: FormErrorsValues) => void,
 	setSubmitting: (value: boolean) => void,
+	clearForm: () => void,
+	setFormField: (field: keyof FormDataType, value: string) => void
 }
 
 const CalcContext = createContext<CalcContextType | null>(null);
 
+const initialFormDataState = {
+	material: '',
+	quantity: '',
+	username: '',
+};
+
 export function CalcProvider({ children }: { children: ReactNode }) {
 	const [materials, setMaterials] = useState<Material[]>([]);
 
-	const [formData, setFormData] = useState<FormDataType>({
-		material: '',
-		quantity: '',
-		username: '',
-	});
+	const [formData, setFormData] = useState<FormDataType>(initialFormDataState);
 
 	const [formErrors, setFormErrors] = useState<FormErrorsType>({});
 
@@ -86,6 +89,14 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 	const hideOverlay = useCallback(() => {
 		setOverlay({ isVisible: false, type: null });
 	}, []);
+
+	// Поля формы
+
+	const clearForm = useCallback(() => setFormData(initialFormDataState), []);
+
+	const setFormField = useCallback((field: keyof FormDataType, value: string) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+	}, [])
 
 	// Валидация
 
@@ -193,7 +204,6 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 			value={
 				{
 					formData,
-					setFormData,
 					formErrors,
 					clearError,
 					updateQuantityError,
@@ -207,6 +217,8 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 					setError,
 					isSubmitting,
 					setSubmitting,
+					clearForm,
+					setFormField,
 				}
 			}
 		>
