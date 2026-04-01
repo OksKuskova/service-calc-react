@@ -11,9 +11,9 @@ import { VALIDATION } from "../../const";
 import { calcApi } from "../../api/api";
 
 function Form(): JSX.Element {
-	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData } = useCalcContext();
+	const { materials, formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, getOrderData, showSuccess, setError } = useCalcContext();
 
-	const handleFormSubmit = (evt: SubmitEvent<HTMLFormElement>) => {
+	const handleFormSubmit = async (evt: SubmitEvent<HTMLFormElement>) => {
 		evt.preventDefault();
 
 		const isValid = validateFormOnSubmit();
@@ -30,9 +30,12 @@ function Form(): JSX.Element {
 		}
 
 		try {
-			calcApi.postOrder(order);
-		} catch (error: unknown) {
+			await calcApi.postOrder(order);
+			showSuccess();
+		}
+		catch (error: unknown) {
 			console.error('Ошибка при оформлении заказа:', error);
+			setError('order', VALIDATION.SERVER_ERROR);
 		}
 	}
 
@@ -60,7 +63,7 @@ function Form(): JSX.Element {
 	return (
 		<form className="calc__form" id={FORM_ID} noValidate onSubmit={handleFormSubmit}>
 			<FormField label="Материал" elementId="material" error={formErrors.material}>
-				<FormSelect name="material" value={formData.material} materials={materials} onChange={handleInputChange} />
+				<FormSelect id="material" name="material" value={formData.material} materials={materials} onChange={handleInputChange} />
 			</FormField>
 
 			<FormField label="Количество" elementId="quantity" error={formErrors.quantity}>

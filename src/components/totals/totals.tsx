@@ -6,8 +6,11 @@ import DiscountTimer from "./discount-timer";
 import Summary from "./summary";
 
 import { START_DISCOUNT_VALUE } from "./totals.const";
+import { useCalcContext } from "../../context";
 
 function Totals(): JSX.Element {
+	const { formErrors } = useCalcContext();
+
 	const [discountPercent, setDiscountPercent] = useState<number>(START_DISCOUNT_VALUE);
 
 	const handleDiscountChange = useCallback((newDiscount: number) => {
@@ -20,7 +23,7 @@ function Totals(): JSX.Element {
 
 			<Summary discountPercent={discountPercent} />
 
-			<FormField>
+			<FormField error={formErrors.order}>
 				<FormButton />
 			</FormField>
 

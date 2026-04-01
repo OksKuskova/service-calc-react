@@ -9,7 +9,6 @@
 	transition: opacity var(--transition-duration);
 }
 
-.overlay--hidden {
-	visibility: hidden;
-	opacity: 0;
+.overlay__text--green {
+	color: var(--color-green-light);
 }

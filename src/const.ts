@@ -19,4 +19,4 @@ export const VALIDATION = {
 	SERVER_ERROR: 'Сервис временно недоступен, мы уже чиним',
 } as const;
 
-export const HINT_VALIDATION_MESSAGES: FormErrorsValues[] = [VALIDATION.ONLY_NUMBERS]
+export const HINT_VALIDATION_MESSAGES: FormErrorsValues[] = [VALIDATION.ONLY_NUMBERS];

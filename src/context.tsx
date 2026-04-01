@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import type { FormErrorsValues, Material, MaterialsValues, Order } from "./types";
+import type { FormErrorsValues, Material, MaterialsValues, Order, Overlay } from "./types";
 import { VALIDATION } from "./const";
 import { calcApi } from "./api/api";
 
@@ -13,6 +13,7 @@ export type FormErrorsType = {
 	material?: FormErrorsValues,
 	quantity?: FormErrorsValues,
 	username?: FormErrorsValues,
+	order?: FormErrorsValues,
 }
 
 type CalcContextType = {
@@ -25,6 +26,10 @@ type CalcContextType = {
 	validateFormOnSubmit: () => boolean;
 	getOrderData: () => Order | null;
 	costWithoutDiscount: number | null;
+	overlay: Overlay;
+	hideOverlay: () => void;
+	showSuccess: () => void;
+	setError: (error: keyof FormErrorsType, errorType: FormErrorsValues) => void,
 }
 
 const CalcContext = createContext<CalcContextType | null>(null);
@@ -40,18 +45,42 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 
 	const [formErrors, setFormErrors] = useState<FormErrorsType>({});
 
+	const [overlay, setOverlay] = useState<Overlay>({
+		isVisible: true,
+		type: null,
+	});
+
 	useEffect(() => {
 		const loadMaterials = async () => {
+			showLoading();
 			try {
 				const data = await calcApi.getMaterials();
 				setMaterials(data);
-			} catch (error: unknown) {
+			}
+			catch (error: unknown) {
 				console.error('Ошибка при загрузке материалов:', error);
+			}
+			finally {
+				hideOverlay();
 			}
 		};
 
 		loadMaterials();
 	}, [])
+
+	// Overlay
+
+	const showLoading = useCallback(() => {
+		setOverlay({ isVisible: true, type: 'loading' });
+	}, []);
+
+	const showSuccess = useCallback(() => {
+		setOverlay({ isVisible: true, type: 'success' });
+	}, []);
+
+	const hideOverlay = useCallback(() => {
+		setOverlay({ isVisible: false, type: null });
+	}, []);
 
 	// Валидация
 
@@ -74,9 +103,13 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 		}
 	}, []);
 
+	const setError = useCallback((field: keyof FormErrorsType, errorType: FormErrorsValues) => {
+		setFormErrors((prev) => ({ ...prev, [field]: errorType }));
+	}, [])
+
 	const updateQuantityError = useCallback((originValue: string, cleanedValue: string) => {
 		if (originValue !== cleanedValue && originValue !== '') {
-			setFormErrors((prev) => ({ ...prev, quantity: VALIDATION.ONLY_NUMBERS }));
+			setError("quantity", VALIDATION.ONLY_NUMBERS);
 		} else {
 			clearError("quantity", VALIDATION.ONLY_NUMBERS);
 		}
@@ -149,7 +182,25 @@ export function CalcProvider({ children }: { children: ReactNode }) {
 	}, [isFormValid, selectedMaterial, formData.quantity]);
 
 	return (
-		<CalcContext.Provider value={{ formData, setFormData, formErrors, clearError, updateQuantityError, validateFormOnSubmit, materials, getOrderData, costWithoutDiscount }}>
+		<CalcContext.Provider
+			value={
+				{
+					formData,
+					setFormData,
+					formErrors,
+					clearError,
+					updateQuantityError,
+					validateFormOnSubmit,
+					materials,
+					getOrderData,
+					costWithoutDiscount,
+					overlay,
+					hideOverlay,
+					showSuccess,
+					setError,
+				}
+			}
+		>
 			{children}
 		</CalcContext.Provider>
 	);
